@@ -1,6 +1,6 @@
 let web3;
 let userAddress;
-const CLAIM_CONTRACT_ADDRESS = "YOUR_CLAIM_CONTRACT_ADDRESS"; // Replace with your deployed ClaimContract address
+const CLAIM_CONTRACT_ADDRESS = "0xD234F1a4F11458A16979B863600F8959f0124508"; // Replace with your deployed ClaimContract address
 
 window.onload = async () => {
   // When the page loads, set up the button handlers
