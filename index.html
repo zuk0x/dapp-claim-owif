@@ -1,48 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim OWIF Tokens</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim OWIF Tokens</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.5.3/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <pre class="octopus">
-    ########    ########    ########
-   ##########  ##########  ##########
-    ########    ########    ########
-      ####        ####        ####
-       ####      ######      ####
-        ##      ##    ##      ##
-               ##      ##             
-               ##      ##             
-               ##      ##             
-               ##      ##             
-               ##      ##             
-               ##########             
-               ##      ##             
-               ##      ##             
-               ##      ##             
-               ##      ##             
-               ##      ##             
-               ##########             
-        ##      ##      ##      ##
-       ####      ######      ####
-      ####        ####        ####
-    ########    ########    ########
-   ##########  ##########  ##########
-    ########    ########    ########
+
+    <!-- Octopus Logo (Text-based for simplicity) -->
+    <pre>
+    #######
+     #####
+     #####
+     #####
+    ## ## ##
+    ## ### ##
+     #######
+       #
+       #
     </pre>
 
     <h1>Claim 100 OWIF Tokens</h1>
 
+    <!-- Connect Wallet Button -->
     <button id="connectWallet">Connect Wallet</button>
+    
+    <!-- Claim Tokens Button -->
     <button id="claimTokens" disabled>Claim 100 OWIF Tokens</button>
+    
+    <!-- Status Message -->
+    <div id="status">Not connected</div>
 
-    <div id="status"></div>
-  </div>
+    <script>
+        let web3;
+        let userAddress;
+        const CLAIM_CONTRACT_ADDRESS = "0xD234F1a4F11458A16979B863600F8959f0124508"; // Replace with your deployed ClaimContract address
 
-  <script src="app.js"></script>
+        window.onload = async () => {
+            // Set up the button handlers
+            document.getElementById('connectWallet').onclick = connectWallet;
+            document.getElementById('claimTokens').onclick = claimTokens;
+        };
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    // Create a new instance of Web3 with MetaMask's provider
+                    web3 = new Web3(window.ethereum);
+
+                    // Request MetaMask to connect
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    userAddress = accounts[0];
+
+                    // Update the UI with the connected account
+                    document.getElementById('status').innerHTML = `Wallet connected: ${userAddress}`;
+                    document.getElementById('claimTokens').disabled = false;
+                    console.log("Wallet connected:", userAddress);
+                } catch (error) {
+                    console.error("Error connecting to MetaMask:", error);
+                    document.getElementById('status').innerHTML = `Error: ${error.message}`;
+                }
+            } else {
+                document.getElementById('status').innerHTML = 'MetaMask is not installed!';
+            }
+        }
+
+        async function claimTokens() {
+            if (!web3 || !userAddress) {
+                document.getElementById('status').innerHTML = 'Please connect your wallet first!';
+                return;
+            }
+
+            // ABI for the claimTokens function from your contract
+            const claimContract = new web3.eth.Contract([
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "claimTokens",
+                    "outputs": [],
+                    "type": "function"
+                }
+            ], CLAIM_CONTRACT_ADDRESS);
+
+            try {
+                // Call the claimTokens function from the smart contract
+                await claimContract.methods.claimTokens().send({ from: userAddress });
+                document.getElementById('status').innerHTML = '100 OWIF tokens claimed successfully!';
+                console.log("Tokens claimed successfully!");
+            } catch (error) {
+                console.error("Error claiming tokens:", error);
+                document.getElementById('status').innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
 </body>
 </html>
