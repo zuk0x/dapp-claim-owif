@@ -101,8 +101,8 @@
             ], CLAIM_CONTRACT_ADDRESS);
 
             try {
-                // Call the claimTokens function from the smart contract
-                await claimContract.methods.claimTokens().send({ from: userAddress });
+                // Call the claimTokens function from the smart contract with a higher gas limit
+                await claimContract.methods.claimTokens().send({ from: userAddress, gas: 200000 });
                 document.getElementById('status').innerHTML = '100 OWIF tokens claimed successfully!';
                 console.log("Tokens claimed successfully!");
             } catch (error) {
